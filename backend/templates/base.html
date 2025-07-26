@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Flask Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <!-- Mobile Toggle Button -->
+<div class="md:hidden p-4 bg-purple-600 text-white flex justify-between items-center">
+  <span class="font-bold text-xl">Dashboard</span>
+  <button onclick="toggleSidebar()">☰</button>
+</div>
+
+  <!-- Sidebar -->
+  <div class="flex min-h-screen">
+    <aside class="w-64 bg-green-700 text-white p-6">
+      <h2 class="text-xl font-bold mb-6">Dashboard</h2>
+      <nav class="space-y-2">
+        <button onclick="loadSection('dashboard')" class="block w-full text-left">🏠 Dashboard</button>
+        <button onclick="loadSection('loans')" class="block w-full text-left">💳 Loans</button>
+        <button onclick="loadSection('reports')" class="block w-full text-left">📊 Reports</button>
+        <button onclick="loadSection('requisitions')" class="block w-full text-left">📄 Requisitions</button>
+        <button onclick="loadSection('claims')" class="block w-full text-left">🧾 Claims</button>
+        <button onclick="loadSection('ariba')" class="block w-full text-left">🔗 ARIBA</button>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      <h1 id="sectionTitle" class="text-2xl font-bold mb-4">Dashboard</h1>
+      <div id="mainContent">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+
+<script>
+
+function toggleSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  sidebar.classList.toggle("hidden");
+}
+
+function renderDashboardChart() {
+  const canvas = document.getElementById('loanChart');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+      datasets: [{
+        label: 'Applications',
+        data: [120, 190, 300, 250],
+        borderColor: 'rgba(99, 102, 241, 1)',
+        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true
+        }
+      }
+    }
+  });
+}
+
+function loadSection(name) {
+  fetch(`/section/${name}`)
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("mainContent").innerHTML = html;
+      document.getElementById("sectionTitle").innerText = name.charAt(0).toUpperCase() + name.slice(1);
+      localStorage.setItem("activeSection", name);
+
+      // Extract and evaluate any <script> tags inside the loaded HTML
+      const scripts = mainContent.querySelectorAll("script");
+      scripts.forEach(script => {
+        const newScript = document.createElement("script");
+        if (script.src) {
+          newScript.src = script.src;
+        } else {
+          newScript.textContent = script.textContent;
+        }
+        document.body.appendChild(newScript);
+      });
+
+
+      if (name === 'dashboard') {
+        setTimeout(renderDashboardChart, 100);
+      }
+
+      // ✅ Attach loan form listener if it's the loans page
+      if (name === 'loans') {
+        setTimeout(bindLoanFormHandler, 100);
+      }
+
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("activeSection") || "dashboard";
+  loadSection(saved);
+});
+
+function bindLoanFormHandlerdsdsd() {
+  const loanForm = document.getElementById("loanForm");
+  if (!loanForm) return;
+
+  loanForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(loanForm);
+
+    fetch("/submit-loan", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("loanResponse").innerHTML = html;
+    })
+    .catch(err => {
+      alert("Submission failed: " + err);
+    });
+  });
+}
+
+
+</script>
+</body>
+</html>

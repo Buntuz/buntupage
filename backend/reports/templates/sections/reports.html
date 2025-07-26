@@ -1,0 +1,43 @@
+<form id="reportForm" class="space-y-4">
+  <input type="text" name="title" placeholder="Loan Title" class="block w-full p-2 border rounded" required />
+  <input type="number" name="amount" placeholder="Loan Amount" class="block w-full p-2 border rounded" required />
+  <button type="submit" class="bg-nedbank text-white px-4 py-2 rounded">Submit</button>
+</form>
+
+<div id="reportResponse" class="mt-4"></div>
+
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+  {% for loan in reports %}
+  <div class="bg-white rounded-xl shadow p-6">
+    <h2 class="text-lg font-semibold">{{ loan.title }}</h2>
+    <p class="text-sm text-gray-500 mb-4">{{ loan.desc }}</p>
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-green-600 font-bold text-lg">{{ loan.amount }}</span>
+      <span class="text-xs px-2 py-1 rounded-full {{ loan.statusColor }}">{{ loan.status }}</span>
+    </div>
+    <button class="w-full py-2 rounded text-white bg-gradient-to-r  from-[#007A33] to-[#09321a] font-medium">View Loans</button>
+  </div>
+  {% endfor %}
+</div>
+
+
+<script>
+  document.getElementById("reportForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("/submit-report", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("reportResponse").innerHTML = html;
+    })
+    .catch(err => {
+      alert("Error submitting form: " + err);
+    });
+  });
+</script>

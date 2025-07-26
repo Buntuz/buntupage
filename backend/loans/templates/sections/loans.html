@@ -1,0 +1,56 @@
+<form id="loanForm" class="space-y-4">
+  <input type="text" name="title" placeholder="Loan Title" class="block w-full p-2 border rounded" required />
+  <input type="number" name="amount" placeholder="Loan Amount" class="block w-full p-2 border rounded" required />
+  <button type="submit" class="bg-nedbank text-white px-4 py-2 rounded">Submit</button>
+</form>
+
+<div id="loanResponse" class="mt-4"></div>
+
+
+<!-- At the bottom of templates/sections/loans.html -->
+<script>
+  function bindLoanFormHandlerNo() {
+    const loanForm = document.getElementById("loanForm");
+    if (!loanForm) return;
+
+    loanForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(loanForm);
+      fetch("/submit-loan", {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("loanResponse").innerHTML = html;
+        loanForm.reset();
+      })
+      .catch(err => {
+        alert("Submission failed: " + err);
+      });
+    });
+  }
+</script>
+
+
+
+<script>
+  document.getElementById("loanForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("/submit-loan", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(html => {
+      document.getElementById("loanResponse").innerHTML = html;
+    })
+    .catch(err => {
+      alert("Error submitting form: " + err);
+    });
+  });
+</script>

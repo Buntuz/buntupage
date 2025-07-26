@@ -1,0 +1,21 @@
+# Node (Next.js) - Frontend
+Frontend/node_modules/
+Frontend/.next/
+Frontend/.env.local
+Frontend/.env*
+
+# Python (Flask) - Backend
+Backend/venv/
+Backend/__pycache__/
+Backend/*.pyc
+Backend/.env
+
+# System / IDE files
+.DS_Store
+*.log
+*.sqlite3
+
+# Docker artifacts
+*.pid
+*.tar
+*.log
