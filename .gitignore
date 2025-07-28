@@ -1,14 +1,14 @@
-# Node (Next.js) - Frontend
-Frontend/node_modules/
-Frontend/.next/
-Frontend/.env.local
-Frontend/.env*
+# Node (Next.js) - frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env*
 
-# Python (Flask) - Backend
-Backend/venv/
-Backend/__pycache__/
-Backend/*.pyc
-Backend/.env
+# Python (Flask) - backend
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
 
 # System / IDE files
 .DS_Store
